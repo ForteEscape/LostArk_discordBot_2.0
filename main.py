@@ -15,7 +15,7 @@ class CustomBot(commands.Bot):
             sync_command=True,
             application_id=863060411414216724
         )
-        self.initial_extensions = ['Cogs.Test']
+        self.initial_extensions = ['Cogs.Test', 'Cogs.PlayerContentHandler', 'Cogs.EmojiHandler', 'Cogs.MarketHandler']
 
     async def setup_hook(self):
         for ext in self.initial_extensions:
