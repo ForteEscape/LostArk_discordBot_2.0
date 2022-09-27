@@ -9,14 +9,25 @@ class DataReader:
     def read_csv(self, path):
         self.__is_data_empty = False
 
-        with open(path, 'r', encoding='utf-8') as csvfile:
-            csv_reader = csv.reader(csvfile)
-            temp_list = []
+        try:
+            with open(path, 'r', encoding='utf-8') as csvfile:
+                csv_reader = csv.reader(csvfile)
+                temp_list = []
 
-            for row in csv_reader:
-                temp_list.append(row)
+                for row in csv_reader:
+                    temp_list.append(row)
 
-            self.__data = temp_list
+                self.__data = temp_list
+        except UnicodeDecodeError:
+            with open(path, 'r', encoding='cp949') as csvfile:
+                csv_reader = csv.reader(csvfile)
+                temp_list = []
+
+                for row in csv_reader:
+                    temp_list.append(row)
+
+                self.__data = temp_list
+
 
     def read_txt(self, path):
         self.__is_data_empty = False
