@@ -111,3 +111,4 @@ putty_key/
 data/
 # End of https://www.toptal.com/developers/gitignore/api/pycharm
 __pycache__/
+*.pyc
