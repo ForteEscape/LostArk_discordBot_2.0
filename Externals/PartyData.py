@@ -19,26 +19,26 @@ from Externals.DataTable import DataTable
 
 class PartyData:
     def __init__(self):
-        self.output_list = []
-        self.week_list = []
-        self.data_status = False
-        self.party_data_reader = PartyDataReader()
-        self.party_table = DataTable()
-        self.exception_handler = ExceptionHandler("PartyData")
+        self.__output_list = []
+        self.__week_list = []
+        self.__data_status = False
+        self.__party_data_reader = PartyDataReader()
+        self.__party_table = DataTable()
+        self.__exception_handler = ExceptionHandler("PartyData")
 
     def make_output_data(self):
         try:
             path_party_list = './data/party_data/party_list.txt'
             party_data_prefix = './data/party_data/'
 
-            self.party_data_reader.read_txt(path_party_list)
+            self.__party_data_reader.read_txt(path_party_list)
 
-            raw_data = self.party_data_reader.get_raw_party_data()
+            raw_data = self.__party_data_reader.get_raw_party_data()
             raw_data.pop()
 
             for filename in raw_data:
-                self.party_data_reader.read_txt(party_data_prefix + filename + ".txt")
-                party_data = self.party_data_reader.get_raw_party_data()
+                self.__party_data_reader.read_txt(party_data_prefix + filename + ".txt")
+                party_data = self.__party_data_reader.get_raw_party_data()
                 party_data.pop()
 
                 party_info_list = filename.split()
@@ -54,22 +54,22 @@ class PartyData:
                     participated_member_list.append(member_list[0])
                     participated_member_list.append(member_list[1])
 
-                self.week_list.append(day_of_week)
+                self.__week_list.append(day_of_week)
 
-                self.party_table.make_table(party_data)
-                party_table = self.party_table.get_data_table()
+                self.__party_table.make_table(party_data)
+                party_table = self.__party_table.get_data_table()
 
-                self.output_list.append([filename, party_table, day_of_week, time, participated_member_list])
+                self.__output_list.append([filename, party_table, day_of_week, time, participated_member_list])
         except Exception as e:
-            self.exception_handler.print_error(e)
+            self.__exception_handler.print_error(e)
 
     def clear_data(self):
-        self.output_list.clear()
-        self.week_list.clear()
+        self.__output_list.clear()
+        self.__week_list.clear()
 
     def get_output_list(self):
-        return self.output_list
+        return self.__output_list
 
     def get_week_list(self):
-        return self.week_list
+        return self.__week_list
 

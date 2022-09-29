@@ -13,16 +13,20 @@ class CustomBot(commands.Bot):
             command_prefix='!',
             intents=discord.Intents.all(),
             sync_command=True,
-            application_id=863060411414216724
+            # application_id=861973692292005908
+            application_id=863060411414216724             # test_service
         )
-        self.initial_extensions = ['Cogs.Test', 'Cogs.PlayerContentHandler',
+        self.initial_extensions = ['Cogs.PlayerContentHandler',
                                    'Cogs.EmojiHandler', 'Cogs.MarketHandler',
                                    'Cogs.MaintenanceHandler', 'Cogs.PartyHandler']
 
     async def setup_hook(self):
         for ext in self.initial_extensions:
             await self.load_extension(ext)
-        await bot.tree.sync(guild=discord.Object(id=863529285553618944))
+        await bot.tree.sync(
+          # guild=discord.Object(id=827887392047497216)
+            guild=discord.Object(id=863529285553618944)     # test_service
+        )
 
     async def on_ready(self):
         print("login")
