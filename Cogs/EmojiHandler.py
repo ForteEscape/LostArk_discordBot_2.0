@@ -25,7 +25,7 @@ class EmojiHandler(commands.Cog):
                 embed.set_image(url=f"https://cdn.discordapp.com/emojis/{m.group(1)}.{ext}")
 
                 await message.channel.send(embed=embed)
-                await message.delete()
+                # await message.delete()
         except Exception as e:
             self.__exception_handler.print_error(e)
 

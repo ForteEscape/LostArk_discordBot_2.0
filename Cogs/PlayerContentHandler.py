@@ -69,5 +69,5 @@ class PlayerContentHandler(commands.Cog):
 async def setup(bot: commands.Bot):
     await bot.add_cog(
         PlayerContentHandler(bot),
-        guilds=[Object(id=863529285553618944)]
+        guilds=[Object(id=827887392047497216), Object(id=863529285553618944)]
     )

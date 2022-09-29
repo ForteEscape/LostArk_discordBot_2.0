@@ -34,7 +34,9 @@ class MaintenanceHandler(commands.Cog):
                     is_not_duplicated = self.notice_crawler.get_crawl_status()
 
                     if is_not_duplicated:
-                        channel = self.bot.get_channel(863529285553618947)
+                        # live service
+                        channel = self.bot.get_channel(945592198165069834)
+                        # channel = self.bot.get_channel(863529285553618947)
 
                         embed = discord.Embed(title=self.notice_crawler.previous_notice_maintenance)
                         embed.add_field(name="내용", value=self.notice_crawler.notice_maintenance_article)
@@ -43,8 +45,8 @@ class MaintenanceHandler(commands.Cog):
 
                 elif is_change:
                     # live service
-                    # channel = self.bot.get_channel(945592198165069834)
-                    channel = self.bot.get_channel(863529285553618947)
+                    channel = self.bot.get_channel(945592198165069834)
+                    # channel = self.bot.get_channel(863529285553618947)
 
                     embed = discord.Embed(title=self.notice_crawler.previous_notice_maintenance)
                     embed.add_field(name="내용", value=self.notice_crawler.notice_maintenance_article)
@@ -58,5 +60,5 @@ class MaintenanceHandler(commands.Cog):
 async def setup(bot: commands.Bot):
     await bot.add_cog(
         MaintenanceHandler(bot),
-        guilds=[Object(id=863529285553618944)]
+        guilds=[Object(id=827887392047497216), Object(id=863529285553618944)]
     )
