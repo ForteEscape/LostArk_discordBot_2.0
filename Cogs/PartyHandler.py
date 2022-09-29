@@ -1,14 +1,14 @@
-from discord import app_commands
 from discord.ext import commands, tasks
 from discord import Object
 from Externals.PartyDataReader import PartyDataReader
 from Externals.PartyDataWriter import PartyDataWriter
 from Externals.PartyData import PartyData
 from Externals.ExceptionHandler import ExceptionHandler
+from pytz import timezone
+import datetime
 import requests
 import os
 import glob
-import discord
 
 
 class PartyHandler(commands.Cog):
@@ -18,7 +18,87 @@ class PartyHandler(commands.Cog):
         self.data_writer = PartyDataWriter()
         self.party_data = PartyData()
         self.__exception_handler = ExceptionHandler("PartyHandler")
+        self.party_data.make_output_data()
+        self.party_alarm.start()
 
+    @tasks.loop(seconds=1)
+    async def party_alarm(self):
+        try:
+            total_party_data = self.party_data.get_output_list()
+            if not total_party_data:
+                return
+
+            days = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일']
+            chk_time = datetime.datetime.now(timezone('Asia/Seoul')) + datetime.timedelta(seconds=1800)
+            day_of_week = days[chk_time.weekday()]
+
+            announce_party = []
+
+            abrel_party_list = [
+                "노브1~6", "하브1~6", "노브1~4", "하브1~4",
+                "노브1~2", "노브3~4", "노브5~6", "하브1~2",
+                "하브3~4", "하브5~6", "하브1~2노브3~4", "하브1~2노브3~6",
+                "하브1~4노브5~6"
+            ]
+
+            illiakan_party_list = ["아칸노말", "아칸하드", "에피데믹"]
+
+            for element in total_party_data:
+                if element[2] == day_of_week:
+                    announce_party.append(element)
+
+            party_member_id = self.data_reader.get_member_id()
+            if not party_member_id:
+                self.data_reader.read_csv("./data/party_data/member_id.csv")
+                party_member_id = self.data_reader.get_member_id()
+
+            for data in announce_party:
+                party_time = data[3].split()
+
+                for index in range(len(data[4])):
+                    for element in party_member_id:
+                        if data[4][index] in element:
+                            data[4][index] = element[1]
+
+                party_data = data[0].split()[1]
+
+                if len(party_time) == 1:
+                    if chk_time.hour == int(party_time[0]) and chk_time.minute == 0 and chk_time.second == 0:
+                        if party_data in abrel_party_list:
+                            # 아브렐슈드 채널
+                            # channel = self.bot.get_channel(998535769977262170)
+                            channel = self.bot.get_channel(1024960497122029609)
+                            await channel.send(data[0] + " 파티에 대한 인원 입니다.")
+                            await channel.send(f"```\n{data[1]}\n```")
+                            await channel.send(f"<@{data[4][0]}> <@{data[4][1]}> <@{data[4][2]}> <@{data[4][3]}> "
+                                               f"<@{data[4][4]}> <@{data[4][5]}> <@{data[4][6]}> <@{data[4][7]}>")
+                        elif party_data in illiakan_party_list:
+                            # channel = self.bot.get_channel(1006737870268158003)
+                            channel = self.bot.get_channel(1024960481221423134)
+                            await channel.send(data[0] + " 파티에 대한 인원 입니다.")
+                            await channel.send(f"```\n{data[1]}\n```")
+                            await channel.send(f"<@{data[4][0]}> <@{data[4][1]}> <@{data[4][2]}> <@{data[4][3]}> "
+                                               f"<@{data[4][4]}> <@{data[4][5]}> <@{data[4][6]}> <@{data[4][7]}>")
+                else:
+                    if chk_time.hour == int(party_time[0]) and chk_time.minute == int(
+                            party_time[1]) and chk_time.second == 0:
+                        if party_data in abrel_party_list:
+                            # 아브렐슈드 채널
+                            # channel = self.bot.get_channel(998535769977262170)
+                            channel = self.bot.get_channel(1024960497122029609)
+                            await channel.send(data[0] + " 파티에 대한 인원 입니다.")
+                            await channel.send(f"```\n{data[1]}\n```")
+                            await channel.send(f"<@{data[4][0]}> <@{data[4][1]}> <@{data[4][2]}> <@{data[4][3]}> "
+                                               f"<@{data[4][4]}> <@{data[4][5]}> <@{data[4][6]}> <@{data[4][7]}>")
+                        elif party_data in illiakan_party_list:
+                            # channel = self.bot.get_channel(1006737870268158003)
+                            channel = self.bot.get_channel(1024960481221423134)
+                            await channel.send(data[0] + " 파티에 대한 인원 입니다.")
+                            await channel.send(f"```\n{data[1]}\n```")
+                            await channel.send(f"<@{data[4][0]}> <@{data[4][1]}> <@{data[4][2]}> <@{data[4][3]}> "
+                                               f"<@{data[4][4]}> <@{data[4][5]}> <@{data[4][6]}> <@{data[4][7]}>")
+        except Exception as e:
+            self.__exception_handler.print_error(e)
     @commands.command()
     async def 파티설정(self, ctx):
         try:
@@ -77,12 +157,12 @@ class PartyHandler(commands.Cog):
                     party = element[0].split()[1]
                     if party in abrel_party_list:
                         # channel = self.bot.get_channel(998535769977262170)
-                        channel = self.bot.get_channel(998532113135583234)
+                        channel = self.bot.get_channel(1024960497122029609)
                         await channel.send(element[0] + " 파티에 대한 인원 입니다.")
                         await channel.send(f"```\n{element[1]}\n```")
                     elif party in illiakan_party_list:
                         # channel = self.bot.get_channel(1006737870268158003)
-                        channel = self.bot.get_channel(1011254141504458783)
+                        channel = self.bot.get_channel(1024960481221423134)
                         await channel.send(element[0] + " 파티에 대한 인원 입니다.")
                         await channel.send(f"```\n{element[1]}\n```")
 
@@ -141,5 +221,5 @@ class PartyHandler(commands.Cog):
 async def setup(bot: commands.Bot):
     await bot.add_cog(
         PartyHandler(bot),
-        guilds=[Object(id=863529285553618944)]
+        guilds=[Object(id=827887392047497216), Object(id=863529285553618944)]
     )
