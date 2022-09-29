@@ -1,5 +1,6 @@
 import csv
 from Externals.DataReader import DataReader
+from Externals.ExceptionHandler import ExceptionHandler
 
 
 class PartyDataReader(DataReader):
@@ -10,34 +11,32 @@ class PartyDataReader(DataReader):
     def __init__(self):
         super().__init__()
         self.__party_data_raw = None
-        self.party_name_list = []
-        self.output_list = []
-        self.week_list = []
+        self.__party_name_list = []
         self.__member_id = None
+        self.__exception_handler = ExceptionHandler("PartyDataReader")
 
     def read_txt(self, path):
         try:
             with open(path, 'r', encoding='utf-8') as file:
                 reader = file.read().splitlines()
-            file.close()
-            reader.append('')
         except UnicodeDecodeError:
             with open(path, 'r', encoding='cp949') as file:
                 reader = file.read().splitlines()
-            file.close()
-            reader.append('')
+        except Exception as e:
+            self.__exception_handler.print_error(e)
 
+        reader.append('')
         self.__party_data_raw = reader
 
     def read_csv(self, path):
         try:
             with open(path, 'r', encoding='utf-8') as member_id_file:
                 file_reader = csv.reader(member_id_file)
+                self.__member_id = list(file_reader)
         except UnicodeDecodeError:
             with open(path, 'r', encoding='cp949') as member_id_file:
                 file_reader = csv.reader(member_id_file)
-
-        self.__member_id = list(file_reader)
+                self.__member_id = list(file_reader)
 
     def get_raw_party_data(self):
         return self.__party_data_raw
