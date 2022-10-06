@@ -11,7 +11,7 @@ class PlayerContentHandler(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.data_reader = DataReader()
-        self.__exception_handler = ExceptionHandler("PlayerContentHandler")
+        self.__exception_handler = ExceptionHandler("PlayerContentHandler").get_logger()
 
     @app_commands.command(name="캐릭터정보")
     async def 캐릭터정보(self, interactions: Interaction, player: str):
@@ -30,7 +30,7 @@ class PlayerContentHandler(commands.Cog):
 
             await interactions.response.send_message(player + "의 정보를 호출합니다\n" + 'https://loawa.com/char/' + key)
         except Exception as e:
-            self.__exception_handler.print_error(e)
+            self.__exception_handler.debug(e)
 
     @app_commands.command(name="각인")
     async def 각인(self, interactions: Interaction, engrave_name: str):
@@ -63,7 +63,7 @@ class PlayerContentHandler(commands.Cog):
             else:
                 await interactions.response.send_message(key + " 각인은 존재하지 않는 각인이거나 추가되지 않은 각인입니다.")
         except Exception as e:
-            self.__exception_handler.print_error(e)
+            self.__exception_handler.debug(e)
 
 
 async def setup(bot: commands.Bot):

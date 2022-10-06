@@ -7,7 +7,7 @@ from Externals.ExceptionHandler import ExceptionHandler
 class DriverConstructor:
     def __init__(self):
         self.driver_status = False
-        self.__exception_handler = ExceptionHandler("DriverConstructor")
+        self.__exception_handler = ExceptionHandler("DriverConstructor").get_logger()
 
     def set_driver(self):
         try:
@@ -27,7 +27,7 @@ class DriverConstructor:
             driver = webdriver.Chrome(service=service, chrome_options=chrome_options)
             # ====================== testing service end ==============================
         except Exception as e:
-            self.__exception_handler.print_error(e)
+            self.__exception_handler.debug(e)
             self.driver_status = False
         else:
             self.driver_status = True

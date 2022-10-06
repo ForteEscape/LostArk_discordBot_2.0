@@ -17,7 +17,7 @@ class PartyHandler(commands.Cog):
         self.data_reader = PartyDataReader()
         self.data_writer = PartyDataWriter()
         self.party_data = PartyData()
-        self.__exception_handler = ExceptionHandler("PartyHandler")
+        self.__exception_handler = ExceptionHandler("PartyHandler").get_logger()
         self.party_data.make_output_data()
         self.party_alarm.start()
 
@@ -65,7 +65,7 @@ class PartyHandler(commands.Cog):
                 if len(party_time) == 1:
                     if chk_time.hour == int(party_time[0]) and chk_time.minute == 0 and chk_time.second == 0:
                         if party_data in abrel_party_list:
-                            # 아브렐슈드 채널
+                            # 아브렐슈드 채널 test
                             # channel = self.bot.get_channel(998535769977262170)
                             channel = self.bot.get_channel(1024960497122029609)
                             await channel.send(data[0] + " 파티에 대한 인원 입니다.")
@@ -73,6 +73,7 @@ class PartyHandler(commands.Cog):
                             await channel.send(f"<@{data[4][0]}> <@{data[4][1]}> <@{data[4][2]}> <@{data[4][3]}> "
                                                f"<@{data[4][4]}> <@{data[4][5]}> <@{data[4][6]}> <@{data[4][7]}>")
                         elif party_data in illiakan_party_list:
+                            # 일리아칸 채널 test
                             # channel = self.bot.get_channel(1006737870268158003)
                             channel = self.bot.get_channel(1024960481221423134)
                             await channel.send(data[0] + " 파티에 대한 인원 입니다.")
@@ -98,7 +99,7 @@ class PartyHandler(commands.Cog):
                             await channel.send(f"<@{data[4][0]}> <@{data[4][1]}> <@{data[4][2]}> <@{data[4][3]}> "
                                                f"<@{data[4][4]}> <@{data[4][5]}> <@{data[4][6]}> <@{data[4][7]}>")
         except Exception as e:
-            self.__exception_handler.print_error(e)
+            self.__exception_handler.debug(e)
     @commands.command()
     async def 파티설정(self, ctx):
         try:
@@ -215,7 +216,7 @@ class PartyHandler(commands.Cog):
                         f"<@{member_id[5]}> <@{member_id[6]}> <@{member_id[7]}> <@{member_id[8]}> <@{member_id[9]}> "
                         f"<@{member_id[10]}> <@{member_id[11]}> <@{member_id[12]}> <@{member_id[13]}> <@{member_id[14]}>")
         except Exception as e:
-            self.__exception_handler.print_error(e)
+            self.__exception_handler.debug(e)
 
 
 async def setup(bot: commands.Bot):

@@ -18,13 +18,13 @@ class CustomBot(commands.Bot):
         )
         self.initial_extensions = ['Cogs.PlayerContentHandler',
                                    'Cogs.EmojiHandler', 'Cogs.MarketHandler',
-                                   'Cogs.MaintenanceHandler', 'Cogs.PartyHandler']
+                                   'Cogs.PartyHandler','Cogs.RefiningHandler']
 
     async def setup_hook(self):
         for ext in self.initial_extensions:
             await self.load_extension(ext)
         await bot.tree.sync(
-          # guild=discord.Object(id=827887392047497216)
+            # guild=discord.Object(id=827887392047497216)
             guild=discord.Object(id=863529285553618944)     # test_service
         )
 

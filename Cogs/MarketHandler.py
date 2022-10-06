@@ -10,7 +10,7 @@ from Externals.ExceptionHandler import ExceptionHandler
 class MarketHandler(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.__exception_handler = ExceptionHandler("MarketHandler")
+        self.__exception_handler = ExceptionHandler("MarketHandler").get_logger()
 
     @app_commands.command(name="경매")
     async def 경매(self, interactions: Interaction, price: int):
@@ -32,7 +32,7 @@ class MarketHandler(commands.Cog):
 
             await interactions.response.send_message(embed=embed)
         except Exception as e:
-            self.__exception_handler.print_error(e)
+            self.__exception_handler.debug(e)
 
 
 async def setup(bot: commands.Bot):

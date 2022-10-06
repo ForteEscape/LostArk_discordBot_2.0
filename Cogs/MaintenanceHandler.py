@@ -12,7 +12,7 @@ class MaintenanceHandler(commands.Cog):
         self.bot = bot
         self.notice_crawler = NoticeCrawler()
         self.notice_update.start()
-        self.__exception_handler = ExceptionHandler("MaintenanceHandler")
+        self.__exception_handler = ExceptionHandler("MaintenanceHandler").get_logger()
 
     """
     # 매일 매시 02, 32분에 공지 데이터를 읽어와 차이가 있을 경우에 최신 공지를 출력한다.
@@ -53,7 +53,7 @@ class MaintenanceHandler(commands.Cog):
 
                     await channel.send(embed=embed)
             except Exception as e:
-                self.__exception_handler.print_error(e)
+                self.__exception_handler.debug(e)
                 return
 
 

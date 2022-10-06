@@ -5,14 +5,14 @@ from Externals.ExceptionHandler import ExceptionHandler
 class DataWriter:
     def __init__(self):
         self.__write_status = False
-        self.__exception_handler = ExceptionHandler("DataWriter")
+        self.__exception_handler = ExceptionHandler("DataWriter").get_logger()
 
     def write_text(self, path, data):
         try:
             with open(path, 'w', newline='') as text_file:
                 text_file.write(data)
         except Exception as e:
-            self.__exception_handler.print_error(e)
+            self.__exception_handler.debug(e)
             self.__write_status = False
             return
         else:
@@ -25,7 +25,7 @@ class DataWriter:
                 csv_file = csv.writer(csv_file)
                 csv_file.writerows(data)
         except Exception as e:
-            self.__exception_handler.print_error(e)
+            self.__exception_handler.debug(e)
             self.__write_status = False
             return
         else:

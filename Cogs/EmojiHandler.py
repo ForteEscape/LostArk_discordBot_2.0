@@ -7,7 +7,7 @@ from Externals.ExceptionHandler import ExceptionHandler
 class EmojiHandler(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.__exception_handler = ExceptionHandler("EmojiHandler")
+        self.__exception_handler = ExceptionHandler("EmojiHandler").get_logger()
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -21,13 +21,16 @@ class EmojiHandler(commands.Cog):
                     ext = "png"
 
                 embed = discord.Embed(color=0xffffff)
-                embed.set_author(name=message.author.display_name, icon_url=message.author.avatar.url)
+                if message.author.avatar is None:
+                    embed.set_author(name=message.author.display_name)
+                else:
+                    embed.set_author(name=message.author.display_name, icon_url=message.author.avatar.url)
                 embed.set_image(url=f"https://cdn.discordapp.com/emojis/{m.group(1)}.{ext}")
 
                 await message.channel.send(embed=embed)
-                # await message.delete()
+                await message.delete()
         except Exception as e:
-            self.__exception_handler.print_error(e)
+            self.__exception_handler.debug(e)
 
 
 async def setup(bot):

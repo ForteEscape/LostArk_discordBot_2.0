@@ -7,7 +7,7 @@ class DataReader:
         self.__data = None
         self.__raw_data = None
         self.__is_data_empty = True
-        self.__exception_handler = ExceptionHandler("DataReader")
+        self.__exception_handler = ExceptionHandler("DataReader").get_logger()
 
     def read_csv(self, path):
         self.__is_data_empty = False
@@ -31,7 +31,7 @@ class DataReader:
 
                 self.__data = temp_list
         except Exception as e:
-            self.__exception_handler.print_error(e)
+            self.__exception_handler.debug(e)
 
     def read_txt(self, path):
         self.__is_data_empty = False
@@ -57,7 +57,7 @@ class DataReader:
 
                 self.__data = temp_list
         except Exception as e:
-            self.__exception_handler.print_error(e)
+            self.__exception_handler.debug(e)
 
     def clean_data(self, path):
         self.__data = None

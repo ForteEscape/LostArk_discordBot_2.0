@@ -24,7 +24,7 @@ class PartyData:
         self.__data_status = False
         self.__party_data_reader = PartyDataReader()
         self.__party_table = DataTable()
-        self.__exception_handler = ExceptionHandler("PartyData")
+        self.__exception_handler = ExceptionHandler("PartyData").get_logger()
 
     def make_output_data(self):
         try:
@@ -61,7 +61,7 @@ class PartyData:
 
                 self.__output_list.append([filename, party_table, day_of_week, time, participated_member_list])
         except Exception as e:
-            self.__exception_handler.print_error(e)
+            self.__exception_handler.debug(e)
 
     def clear_data(self):
         self.__output_list.clear()

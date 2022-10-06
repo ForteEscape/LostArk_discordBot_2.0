@@ -10,7 +10,7 @@ DataTable은 이 파티 인원 구조를 가지고 있다가 요청이 올 시 �
 class DataTable:
     def __init__(self):
         self.__data_table = None
-        self.__exception_handler = ExceptionHandler("DataTable")
+        self.__exception_handler = ExceptionHandler("DataTable").get_logger()
 
     def make_table(self, data):
         table = PrettyTable()
@@ -22,7 +22,7 @@ class DataTable:
                 member_list = data[index].split()
                 table.add_row(member_list)
         except Exception as e:
-            self.__exception_handler.print_error(e)
+            self.__exception_handler.debug(e)
             return
 
         self.__data_table = table

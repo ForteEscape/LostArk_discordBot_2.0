@@ -13,7 +13,7 @@ class PartyDataReader(DataReader):
         self.__party_data_raw = None
         self.__party_name_list = []
         self.__member_id = None
-        self.__exception_handler = ExceptionHandler("PartyDataReader")
+        self.__exception_handler = ExceptionHandler("PartyDataReader").get_logger()
 
     def read_txt(self, path):
         try:
@@ -23,7 +23,7 @@ class PartyDataReader(DataReader):
             with open(path, 'r', encoding='cp949') as file:
                 reader = file.read().splitlines()
         except Exception as e:
-            self.__exception_handler.print_error(e)
+            self.__exception_handler.debug(e)
 
         reader.append('')
         self.__party_data_raw = reader
@@ -37,6 +37,8 @@ class PartyDataReader(DataReader):
             with open(path, 'r', encoding='cp949') as member_id_file:
                 file_reader = csv.reader(member_id_file)
                 self.__member_id = list(file_reader)
+        except Exception as e:
+            self.__exception_handler.debug(e)
 
     def get_raw_party_data(self):
         return self.__party_data_raw

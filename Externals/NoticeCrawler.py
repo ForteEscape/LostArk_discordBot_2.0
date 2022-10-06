@@ -15,7 +15,7 @@ class NoticeCrawler(DriverConstructor):
         self.data_crawl_status = None
         self.data_reader = DataReader()
         self.data_writer = DataWriter()
-        self.__exception_handler = ExceptionHandler("NoticeCrawler")
+        self.__exception_handler = ExceptionHandler("NoticeCrawler").get_logger()
 
     def get_maintenance_data(self):
         article_path = '#lostark-wrapper > div > main > div > div.board.board--article > article > section > div'
@@ -79,7 +79,7 @@ class NoticeCrawler(DriverConstructor):
                 self.data_crawl_status = False
                 return
         except Exception as e:
-            self.__exception_handler.print_error(e)
+            self.__exception_handler.debug(e)
 
     def get_crawl_status(self):
         return self.data_crawl_status
