@@ -28,8 +28,5 @@ class ExceptionHandler:
 
         return logger
 
-    def print_error(self, exception):
-        self.__logger.debug(exception)
-
     def get_logger(self):
         return self.__logger
