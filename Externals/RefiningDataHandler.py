@@ -61,7 +61,7 @@ class RefiningDataHandler:
                   "cur_ceiling_status, cur_success_prob, refining_count) " \
                   "value(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
             self.__cursor.execute(sql, [
-                success_data["user_id"], success_data["weapon_class"], success_data["cur_step"],
+                success_data["user_id"], success_data["weapon_class"], success_data["cur_step"] + 1,
                 success_data["used_material_1"], success_data["used_material_2"], success_data["used_material_3"],
                 success_data["used_material_4"], success_data["used_gold"], success_data["used_refining_helper_1"],
                 success_data["used_refining_helper_2"], success_data["used_refining_helper_3"],

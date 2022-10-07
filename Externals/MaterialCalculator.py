@@ -37,7 +37,7 @@ class MaterialCalculator:
 
             if not is_success:
                 # 강화 성공 확률 상승
-                success_prob = float(db_data_dic["cur_success_prob"]) + (float(suc_prob) * 0.1)
+                success_prob = round(float(db_data_dic["cur_success_prob"]) + (float(suc_prob) * 0.1), 2)
 
                 if success_prob > suc_prob * 2:
                     success_prob = float(db_data_dic["cur_success_prob"])
@@ -49,7 +49,10 @@ class MaterialCalculator:
                 context.rounding = decimal.ROUND_HALF_UP
                 current_try_prob = float(db_data_dic["cur_success_prob"])
                 if used_helper:
-                    current_try_prob += suc_prob
+                    if db_data_dic["cur_step"] + 1 >= 24:
+                        current_try_prob += 1
+                    else:
+                        current_try_prob += suc_prob
 
                 ceiling_status = round(decimal.Decimal(db_data_dic["cur_ceiling_status"]) +
                                        round(decimal.Decimal(str(current_try_prob * 0.465)), 2), 2)

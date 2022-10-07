@@ -133,9 +133,17 @@ class RefiningHandler(commands.Cog):
             use_helper = False
             if add_refining_helper_selection.values[0] == "풀숨":
                 prob = (prob + material_data.loc[user_current_step + 1, "일반성공확률"]) * 0.01
+
+                if user_current_step >= 24:
+                    prob = (prob + 1) * 0.01
+
                 use_helper = True
             else:
-                prob = prob * 0.01
+                if float(usr_cur_ceiling) < 100:
+                    prob = prob * 0.01
+                else:
+                    prob = 1
+
 
             rand = random.random()
             datalist = [material_data.loc[user_current_step + 1, "파괴석"],
@@ -191,7 +199,7 @@ class RefiningHandler(commands.Cog):
                     embed = discord.Embed(title="강화 실패...",
                                           description=
                                           f"쌓인 장인의 기운: {str(round(float(update_datalist[-1]) - float(usr_cur_ceiling), 2))}%\n"
-                                          f"상승한 성공 확률: {str(float(update_datalist[-2]) - float(usr_cur_suc_prob))}%")
+                                          f"상승한 성공 확률: {str(round(float(update_datalist[-2]) - float(usr_cur_suc_prob), 2))}%")
 
                     await interaction.response.send_message(embed=embed)
             except Exception as e:
