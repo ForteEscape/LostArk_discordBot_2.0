@@ -14,7 +14,7 @@ class DBhandler:
             self.__user_refining_data = pymysql.connect(
                 user='root',
                 passwd='0000',
-                host='127.0.0.1',
+                host='localhost',
                 db='refining_db',
                 charset='utf8'
             )

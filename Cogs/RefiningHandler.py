@@ -5,6 +5,7 @@ from Externals.ExceptionHandler import ExceptionHandler
 from Externals.RefiningMaterialData import RefiningMaterialData
 from Externals.RefiningDataHandler import RefiningDataHandler
 from Externals.MaterialCalculator import MaterialCalculator
+from Externals.DataTable import DataTable
 import random
 import discord
 
@@ -15,16 +16,19 @@ class RefiningHandler(commands.Cog):
         self.__exception_handler = ExceptionHandler("RefiningHandler").get_logger()
         self.__material_data = RefiningMaterialData()
         self.__update_data = MaterialCalculator()
-        self.data_handler = RefiningDataHandler()
+        self.__data_handler = RefiningDataHandler()
+        self.__data_table = DataTable()
 
     @app_commands.command(name="무기선택")
     async def 무기선택(self, interactions: Interaction):
         uid = str(interactions.user.id)
-        is_duplicated = self.data_handler.find_data(uid)
+        is_duplicated = self.__data_handler.find_data(uid)
 
         if is_duplicated:
             await interactions.response.send_message("이미 등록한 무기가 존재합니다. 재등록을 원할 시 무기 삭제 명령어를 사용하세요")
             return
+
+        await interactions.response.send_message("강화할 무기를 선택해주세요 도중에 바꿀 수 없습니다.")
 
         try:
             select = Select(placeholder="무기종류")
@@ -35,7 +39,7 @@ class RefiningHandler(commands.Cog):
             view.add_item(select)
 
             async def select_callback(interaction: Interaction):
-                await interaction.response.edit_message(content="강화할 무기가 " + select.values[0] + "무기로 선택되었습니다.")
+                await interaction.response.send_message("강화할 무기가 " + select.values[0] + "무기로 선택되었습니다.")
                 data = self.__material_data.get_data(select.values[0])
                 cur_step = 0
                 if select.values[0] == "유물":
@@ -46,21 +50,21 @@ class RefiningHandler(commands.Cog):
                     cur_step = 11
 
                 success_prob = data.loc[cur_step + 1, "일반성공확률"]
-                print(type(success_prob))
-                self.data_handler.signup(uid=uid, weapon_class=select.values[0],
+                self.__data_handler.signup(uid=uid, weapon_class=select.values[0],
                                          cur_step=cur_step, cur_success_probability=success_prob)
+                await regit_message.delete()
 
             select.callback = select_callback
         except Exception as e:
             self.__exception_handler.debug(e)
         else:
-            await interactions.response.send_message(view=view)
+            regit_message = await interactions.followup.send(view=view)
 
     @app_commands.command(name="무기삭제")
     async def 무기삭제(self, interactions: Interaction):
         uid = str(interactions.user.id)
 
-        result = self.data_handler.find_data(uid=uid)
+        result = self.__data_handler.find_data(uid=uid)
         if not result:
             await interactions.response.send_message("무기를 삭제할 수 없습니다. 등록되지 않은 사용자입니다.")
             return
@@ -73,19 +77,20 @@ class RefiningHandler(commands.Cog):
             view.add_item(delete_button)
 
             async def button_callback(interaction: Interaction):
-                self.data_handler.withdraw(uid)
-                await interaction.response.edit_message(content="무기가 삭제되었습니다.")
+                self.__data_handler.withdraw(uid)
+                await interaction.response.send_message("무기가 삭제되었습니다.")
+                await delete_message.delete()
 
             delete_button.callback = button_callback
         except Exception as e:
             self.__exception_handler.debug(e)
         else:
-            await interactions.followup.send(view=view)
+            delete_message = await interactions.followup.send(view=view)
 
     @app_commands.command(name="강화")
     async def 강화(self, interactions: Interaction):
         uid = str(interactions.user.id)
-        result = self.data_handler.find_data(uid=uid)
+        result = self.__data_handler.find_data(uid=uid)
 
         if not result:
             await interactions.response.send_message("등록되지 않은 유저입니다. 무기선택 명령어를 실행하여 먼저 등록해주세요")
@@ -123,12 +128,10 @@ class RefiningHandler(commands.Cog):
         material_data = self.__material_data.get_data(usr_wpn_cls)
 
         async def select_callback(interaction: Interaction):
-            add_refining_helper_selection.disabled = True
             await interaction.response.edit_message(content=add_refining_helper_selection.values[0] + " 강화를 선택하셨습니다.")
         add_refining_helper_selection.callback = select_callback
 
         async def button_callback(interaction: Interaction):
-            button.disabled = True
             prob = float(result[0]["cur_success_prob"])
             use_helper = False
             if add_refining_helper_selection.values[0] == "풀숨":
@@ -164,16 +167,16 @@ class RefiningHandler(commands.Cog):
                     self.__update_data.calculate_material(datalist=datalist, is_success=True,
                                                           used_helper=use_helper, db_data_dic=result[0])
                     update_datalist = self.__update_data.get_datalist()
-                    self.data_handler.update(datalist=update_datalist, uid=uid)
-                    self.data_handler.data_transport(uid=uid)
+                    self.__data_handler.update(datalist=update_datalist, uid=uid)
+                    self.__data_handler.data_transport(uid=uid)
 
                     if user_current_step + 1 == 25:
                         new_success_prob = "0.0"
                     else:
                         new_success_prob = str(material_data.loc[user_current_step + 2, "일반성공확률"])
-                    self.data_handler.data_init(uid=uid, s_prob=new_success_prob)
+                    self.__data_handler.data_init(uid=uid, s_prob=new_success_prob)
 
-                    embed = discord.Embed(title="강화 성공!")
+                    embed = discord.Embed(title=f"{interactions.user.name} 님의 강화 성공!")
                     embed.add_field(name="개요",
                                     value=f"강화 횟수: {str(update_datalist[0])}회\n"
                                           f"확률: {usr_cur_suc_prob} %\n"
@@ -194,22 +197,64 @@ class RefiningHandler(commands.Cog):
                     self.__update_data.calculate_material(datalist=datalist, is_success=False,
                                                           used_helper=use_helper, db_data_dic=result[0])
                     update_datalist = self.__update_data.get_datalist()
-                    self.data_handler.update(datalist=update_datalist, uid=uid)
+                    self.__data_handler.update(datalist=update_datalist, uid=uid)
 
-                    embed = discord.Embed(title="강화 실패...",
-                                          description=
-                                          f"쌓인 장인의 기운: {str(round(float(update_datalist[-1]) - float(usr_cur_ceiling), 2))}%\n"
+                    embed = discord.Embed(title=f"{interactions.user.name} 님의 무기 강화 결과")
+                    embed.add_field(name="강화 실패...",
+                                    value=f"쌓인 장인의 기운: {str(round(float(update_datalist[-1]) - float(usr_cur_ceiling), 2))}%\n"
                                           f"상승한 성공 확률: {str(round(float(update_datalist[-2]) - float(usr_cur_suc_prob), 2))}%")
 
                     await interaction.response.send_message(embed=embed)
             except Exception as e:
                 self.__exception_handler.debug(e)
+            else:
+                await msg.delete()
         button.callback = button_callback
 
-        await interactions.followup.send(view=view)
+        msg = await interactions.followup.send(view=view)
 
-    async def 강화정보(self, interactions: Interaction):
-        pass
+    @app_commands.command(name="강화기록")
+    async def 강화기록(self, interactions: Interaction):
+        uid = str(interactions.user.id)
+        refining_data = []
+        summary = ["합계", 0, 0, 0, 0, 0, 0, 0, 0]
+        data_filter = ["used_material_1", "used_material_2", "used_material_3", "used_material_4", "used_gold",
+                  "used_refining_helper_1", "used_refining_helper_2", "used_refining_helper_3"]
+
+        info_data = self.__data_handler.find_record_data(uid=uid)
+
+        if not info_data:
+            info_data = self.__data_handler.find_data(uid=uid)
+
+            if not info_data:
+                await interactions.response.send_message("무기 선택을 하지 않을 시 사용할 수 없습니다.")
+                return
+            else:
+                await interactions.response.send_message("강화 성공 내역이 없어 불러올 수 없습니다.")
+
+        try:
+            for data_dictionary in info_data:
+                temp = []
+                summary_idx = 1
+                for element in data_dictionary.keys():
+                    temp.append(data_dictionary[element])
+
+                    if element in data_filter:
+                        summary[summary_idx] += data_dictionary[element]
+                        summary_idx += 1
+
+                # user_id, weapon_class 는 테이블에 표시하지 않아도 상관없다.
+                refining_data.append(temp[2:11])
+
+            list_for_separate = ["----", "----", "----", "----", "----", "----", "----", "----", "----"]
+            refining_data.append(list_for_separate)
+            refining_data.append(summary)
+            self.__data_table.make_refining_table(refining_data, info_data[0]['weapon_class'])
+            refining_table = self.__data_table.get_data_table()
+        except Exception as e:
+            self.__exception_handler.debug(e)
+        else:
+            await interactions.response.send_message(f"```\n{refining_table}\n```")
 
 
 async def setup(bot: commands.Bot):

@@ -56,7 +56,7 @@ class PartyData:
 
                 self.__week_list.append(day_of_week)
 
-                self.__party_table.make_table(party_data)
+                self.__party_table.make_party_table(party_data)
                 party_table = self.__party_table.get_data_table()
 
                 self.__output_list.append([filename, party_table, day_of_week, time, participated_member_list])

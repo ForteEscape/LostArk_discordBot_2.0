@@ -12,7 +12,7 @@ class DataTable:
         self.__data_table = None
         self.__exception_handler = ExceptionHandler("DataTable").get_logger()
 
-    def make_table(self, data):
+    def make_party_table(self, data):
         table = PrettyTable()
 
         try:
@@ -26,6 +26,24 @@ class DataTable:
             return
 
         self.__data_table = table
+
+    def make_refining_table(self, data, weapon_class):
+        table = PrettyTable()
+
+        if weapon_class == '유믈':
+            table.field_names = ["단계", "파결", "위명돌", "중급 오레하", "명파", "골드", "가호", "축복", "은총"]
+        elif weapon_class == '상위유물':
+            table.field_names = ["단계", "파강", "경명돌", "상급 오레하", "명파", "골드", "가호", "축복", "은총"]
+        elif weapon_class == '상위고대':
+            table.field_names = ["단계", "정파강", "찬명돌", "최상급 오레하", "명파", "골드", "가호", "축복", "은총"]
+
+        try:
+            for element in data:
+                table.add_row(element)
+        except Exception as e:
+            self.__exception_handler.debug(e)
+        else:
+            self.__data_table = table
 
     def get_data_table(self):
         return self.__data_table
