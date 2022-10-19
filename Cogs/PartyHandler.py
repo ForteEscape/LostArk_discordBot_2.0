@@ -108,6 +108,7 @@ class PartyHandler(commands.Cog):
             path_party_list = './data/party_data/party_list.txt'
             [os.remove(f) for f in glob.glob("./data/party_data/*.txt")]
             self.party_data.clear_data()
+            self.data_writer.file_list_clear()
 
             attachment_url = ctx.message.attachments[0].url
             file_request = requests.get(attachment_url)
@@ -131,8 +132,7 @@ class PartyHandler(commands.Cog):
                 participate_member = element[4]
 
                 for member in participate_member:
-                    if (member not in participate_weekly_member_list) and (
-                            member not in ["공석", "서폿", "워로드", "홀나", "지인"]):
+                    if member not in participate_weekly_member_list:
                         participate_weekly_member_list.append(member)
 
             if len(participate_weekly_member_list) <= 4:
@@ -157,12 +157,14 @@ class PartyHandler(commands.Cog):
                 for element in party_output_data:
                     party = element[0].split()[1]
                     if party in abrel_party_list:
-                        # channel = self.bot.get_channel(998535769977262170)
+                        # 아브렐 테스트
+                        # channel = self.bot.get_channel(998532113135583234)
                         channel = self.bot.get_channel(1024960497122029609)
                         await channel.send(element[0] + " 파티에 대한 인원 입니다.")
                         await channel.send(f"```\n{element[1]}\n```")
                     elif party in illiakan_party_list:
-                        # channel = self.bot.get_channel(1006737870268158003)
+                        # 일리아칸 테스트
+                        # channel = self.bot.get_channel(1011254141504458783)
                         channel = self.bot.get_channel(1024960481221423134)
                         await channel.send(element[0] + " 파티에 대한 인원 입니다.")
                         await channel.send(f"```\n{element[1]}\n```")

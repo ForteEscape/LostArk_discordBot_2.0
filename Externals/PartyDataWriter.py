@@ -32,3 +32,6 @@ class PartyDataWriter(DataWriter):
 
     def get_party_name_list(self):
         return self.__filename_list
+
+    def file_list_clear(self):
+        self.__filename_list.clear()
